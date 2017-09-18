@@ -110,12 +110,212 @@ INSERT INTO Package VALUES(5, 1, 'Undeclared', 100.0, 5, 1);
 Create all select queries as VIEW Object and name it as v1...vn
 
 Q1) Display employess who name is "Turanga Leela" along with its shipment dertails.
+
+select * from employee as e INNER JOIN shipment as s ON  s.manager=e.employeeid and e.name='turanga leela';
++------------+---------------+----------+--------+---------+------------+--------------+---------+--------+
+| employeeId | name          | position | salary | remarks | ShipmentID | ShipmentDate | Manager | Planet |
++------------+---------------+----------+--------+---------+------------+--------------+---------+--------+
+|          2 | Turanga Leela | Captain  |  10000 | NULL    |          3 | NULL         |       2 |      3 |
+|          2 | Turanga Leela | Captain  |  10000 | NULL    |          4 | NULL         |       2 |      4 |
++------------+---------------+----------+--------+---------+------------+--------------+---------+--------+
+2 rows in set (0.00 sec)
+
+
 Q2) List those packages which are intented for client whose ids are 1,5 or 6
+
+
+ select * from package as p INNER JOIN client as c ON c.accountnumber=p.recipient AND p.Recipient in (1,5,6);
++----------+---------------+------------+--------+--------+-----------+---------------+----------------+
+| Shipment | PackageNumber | Contents   | Weight | Sender | Recipient | AccountNumber | Name           |
++----------+---------------+------------+--------+--------+-----------+---------------+----------------+
+|        3 |             2 | Undeclared |   3.00 |      5 |         1 |             1 | Zapp Brannigan |
+|        4 |             1 | Undeclared |   5.00 |      4 |         5 |             5 | Leo Wong       |
+|        5 |             1 | Undeclared | 100.00 |      5 |         1 |             1 | Zapp Brannigan |
++----------+---------------+------------+--------+--------+-----------+---------------+----------------+
+3 rows in set (0.01 sec)
+
+
+
+
 Q3) Display name of emnployee and plant which are cleared
+
+
+select distinct * from employee as e inner join has_clearance as h on h.employee=e.employeeid;
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+----------+--------+-------+
+| employeeId | name                     | position     | salary | remarks                                                                 | Employee | Planet | Level |
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+----------+--------+-------+
+|          1 | Phillip J. Fry           | Delivery boy |   7500 | Not to be confused with the Philip J. Fry from Hovering Squid World 97a |        1 |      1 |     2 |
+|          1 | Phillip J. Fry           | Delivery boy |   7500 | Not to be confused with the Philip J. Fry from Hovering Squid World 97a |        1 |      2 |     3 |
+|          2 | Turanga Leela            | Captain      |  10000 | NULL                                                                    |        2 |      3 |     2 ||          2 | Turanga Leela            | Captain      |  10000 | NULL                                                                    |        2 |      4 |     4 |
+|          3 | Bender Bending Rodriguez | Robot        |   7500 | NULL                                                                    |        3 |      5 |     2 |
+|          3 | Bender Bending Rodriguez | Robot        |   7500 | NULL                                                                    |        3 |      6 |     4 |
+|          4 | Hubert J. Farnsworth     | CEO          |  20000 | NULL                                                                    |        4 |      7 |     1 |
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+----------+--------+-------+
+7 rows in set (0.08 sec)
+
+
+
 Q4) Display details of shipment data (Month, Day YYYY), sender and receiver name whose package weight is between 5 and 10
+
+
+SELECT CONCAT(Month(ShipmentDate),',',Day(ShipmentDate),' ',Year(ShipmentDate)) as ShipmentDate,sen.name as Sender_name,rec.name as Receipent_name FROM Shipment AS s
+    ->  INNER JOIN Package AS p ON p.Shipment = s.ShipmentID
+    ->  INNER JOIN Client AS sen ON sen.AccountNumber = p.sender
+    ->  INNER JOIN Client AS rec ON rec.AccountNumber = p.Recipient
+    ->  AND p.Weight BETWEEN 5 and 10;
++--------------+-----------------+----------------+
+| ShipmentDate | Sender_name     | Receipent_name |
++--------------+-----------------+----------------+
+| 5,11 3004    | Al Gore's Head  | Barbados Slim  |
+| NULL         | Al Gore's Head  | Barbados Slim  |
+| NULL         | Ogden Wernstrom | Leo Wong       |
++--------------+-----------------+----------------+
+3 rows in set (0.03 sec)
+
+
+
+
+
+
+
 Q5) Give details of those shipments which are currently processed at plant name "Mars" or "Amazonia"
+
+select * from shipment as s INNER JOIN planet as p On p.planetid= s.planet  and p.name in ('mars','amazonia');
++------------+--------------+---------+--------+----------+------+----------------+
+| ShipmentID | ShipmentDate | Manager | Planet | PlanetID | Name | Coordinates    |
++------------+--------------+---------+--------+----------+------+----------------+
+|          3 | NULL         |       2 |      3 |        3 | Mars |     9999.99    |
++------------+--------------+---------+--------+----------+------+----------------+
+1 row in set (0.00 sec)
+
+
+
 Q6) List client names whose pakages are "Undeclared"
+
+ select distinct (c.name) as clientnames from package as p inner join client as c ON c.accountnumber=p.recipient and p.contents='UNDECLARED';
++-----------------+
+| clientnames     |
++-----------------+
+| Al Gore's Head  |
+| Barbados Slim   |
+| Ogden Wernstrom |
+| Zapp Brannigan  |
+| Leo Wong        |
++-----------------+
+5 rows in set (0.00 sec)
+
+
+
+
 Q7) Display those employees details containing salary format as $2,700.00
+
+ SELECT *,CONCAT('$',FORMAT(Salary,2)) FROM Employee;
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+------------------------------+
+| employeeId | name                     | position     | salary | remarks                                                                 | CONCAT('$',FORMAT(Salary,2)) |
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+------------------------------+
+|          1 | Phillip J. Fry           | Delivery boy |   7500 | Not to be confused with the Philip J. Fry from Hovering Squid World 97a | $7,500.00                    |
+|          2 | Turanga Leela            | Captain      |  10000 | never marked before                                                     | $10,000.00                   |
+|          3 | Bender Bending Rodriguez | Robot        |   7500 | never marked before                                                     | $7,500.00                    |
+|          4 | Hubert J. Farnsworth     | CEO          |  20000 | never marked before                                                     | $20,000.00                   |
+|          5 | John A. Zoidberg         | Physician    |     25 | never marked before                                                     | $25.00                       |
+|          6 | Amy Wong                 | Intern       |   5000 | never marked before                                                     | $5,000.00                    |
+|          7 | Hermes Conrad            | Bureaucrat   |  10000 | never marked before                                                     | $10,000.00                   |
+|          8 | Scruffy Scruffington     | Janitor      |   5000 | never marked before                                                     | $5,000.00                    |
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+------------------------------+
+8 rows in set (0.00 sec)
+
+
+
+
+UPDATE Shipment SET ShipmentDate = CURRENT_DATE()
+		 WHERE ShipmentDate IS NULL;
+	Query OK, 3 rows affected (0.05 sec)
+	Rows matched: 3  Changed: 3  Warnings: 0
+
+	MariaDB [examc0713340]> SELECT * FROM Shipment;
+	+------------+--------------+---------+--------+
+	| ShipmentID | ShipmentDate | Manager | Planet |
+	+------------+--------------+---------+--------+
+	|          1 | 3004-05-11   |       1 |      1 |
+	|          2 | 3004-05-11   |       1 |      2 |
+	|          3 | 2017-09-18   |       2 |      3 |
+	|          4 | 2017-09-18   |       2 |      4 |
+	|          5 | 2017-09-18   |       7 |      5 |
+	+------------+--------------+---------+--------+
+	5 rows in set (0.00 sec)
+
+
+
+
 Q8) Write query to Add remarks of those employee which are never remarked before.
+update employee set remarks='never marked before' where remarks is null;
+Query OK, 7 rows affected (0.08 sec)
+Rows matched: 7  Changed: 7  Warnings: 0
+
+
+ select * from employee;
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+
+| employeeId | name                     | position     | salary | remarks                                                                 |
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+
+|          1 | Phillip J. Fry           | Delivery boy |   7500 | Not to be confused with the Philip J. Fry from Hovering Squid World 97a |
+|          2 | Turanga Leela            | Captain      |  10000 | never marked before                                                     |
+|          3 | Bender Bending Rodriguez | Robot        |   7500 | never marked before                                                     |
+|          4 | Hubert J. Farnsworth     | CEO          |  20000 | never marked before                                                     |
+|          5 | John A. Zoidberg         | Physician    |     25 | never marked before                                                     |
+|          6 | Amy Wong                 | Intern       |   5000 | never marked before                                                     |
+|          7 | Hermes Conrad            | Bureaucrat   |  10000 | never marked before                                                     |
+|          8 | Scruffy Scruffington     | Janitor      |   5000 | never marked before                                                     |
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+
+8 rows in set (0.00 sec)
+
+
+
+
+
+
 Q9) Display employee details in following format "Phillip J. Fry is Delivery boy and earns $7,500.00/month"
+
+SELECT CONCAT(Name,' is ',Position,'and earns ', '$',Salary, '/month' ) FROM employee ;
+	+------------------------------------------------------------------+
+	| CONCAT(Name,' is ',Position,'and earns ', '$',Salary, '/month' ) |
+	+------------------------------------------------------------------+
+	| Phillip J. Fry is Delivery boyand earns $7500.00/month           |
+	| Turanga Leela is Captainand earns $9999.99/month                 |
+	| Bender Bending Rodriguez is Robotand earns $7500.00/month        |
+	| Hubert J. Farnsworth is CEOand earns $9999.99/month              |
+	| John A. Zoidberg is Physicianand earns $25.00/month              |
+	| Amy Wong is Internand earns $5000.00/month                       |
+	| Hermes Conrad is Bureaucratand earns $9999.99/month              |
+	| Scruffy Scruffington is Janitorand earns $5000.00/month          |
+	+------------------------------------------------------------------+
+	8 rows in set (0.00 sec)
+
+
+
+
+
+
+
+
+
 Q10) Update shipment date to current date for all data having NULL value
+
+UPDATE Shipment SET ShipmentDate = CURRENT_DATE()
+		 WHERE ShipmentDate IS NULL;
+	Query OK, 3 rows affected (0.05 sec)
+	Rows matched: 3  Changed: 3  Warnings: 0
+
+	MariaDB [examc0713340]> SELECT * FROM Shipment;
+	+------------+--------------+---------+--------+
+	| ShipmentID | ShipmentDate | Manager | Planet |
+	+------------+--------------+---------+--------+
+	|          1 | 3004-05-11   |       1 |      1 |
+	|          2 | 3004-05-11   |       1 |      2 |
+	|          3 | 2017-09-18   |       2 |      3 |
+	|          4 | 2017-09-18   |       2 |      4 |
+	|          5 | 2017-09-18   |       7 |      5 |
+	+------------+--------------+---------+--------+
+	5 rows in set (0.00 sec)
+
+
+
