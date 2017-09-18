@@ -227,22 +227,7 @@ Q7) Display those employees details containing salary format as $2,700.00
 
 
 
-UPDATE Shipment SET ShipmentDate = CURRENT_DATE()
-		 WHERE ShipmentDate IS NULL;
-	Query OK, 3 rows affected (0.05 sec)
-	Rows matched: 3  Changed: 3  Warnings: 0
 
-	MariaDB [examc0713340]> SELECT * FROM Shipment;
-	+------------+--------------+---------+--------+
-	| ShipmentID | ShipmentDate | Manager | Planet |
-	+------------+--------------+---------+--------+
-	|          1 | 3004-05-11   |       1 |      1 |
-	|          2 | 3004-05-11   |       1 |      2 |
-	|          3 | 2017-09-18   |       2 |      3 |
-	|          4 | 2017-09-18   |       2 |      4 |
-	|          5 | 2017-09-18   |       7 |      5 |
-	+------------+--------------+---------+--------+
-	5 rows in set (0.00 sec)
 
 
 
